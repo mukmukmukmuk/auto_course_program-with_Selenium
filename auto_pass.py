@@ -38,34 +38,57 @@ driver.switch_to.window( driver.window_handles[1])
 driver.find_element(By.XPATH,'/html/body/main/section/div[1]/article/a').click()
 #######################################
 
-#lecture_count : 강의의 수
-lecture_count=int(driver.find_element(By.CSS_SELECTOR,'#student-container > section > div.board-list-wrap > table > tbody > tr:last-child > td.d-num').text)
+#chapter_count : 챕터의 수
+chapter_count=int(driver.find_element(By.CSS_SELECTOR,'#student-container > section > div.board-list-wrap > table > tbody > tr:last-child > td.d-num').text)
 
-#cur : 현재 재생되는 강의의 number
-for cur in range(1,lecture_count+1):
+#cur : 현재 재생되는 챕터의 number
+for cur in range(1,chapter_count+1):
     #진도율 갱신을 위한 화면 클릭
     driver.find_element(By.ID,'student-container').click()
-
     #진도율이 100%면 continue
-    cur_progress=driver.find_element(By.CSS_SELECTOR,f'#student-container > section > div.board-list-wrap > table > tbody > tr:nth-child({cur}) > td.td-view')
+    cur_progress=driver.find_element(By.CSS_SELECTOR,f'#student-container > section > div.board-list-wrap > table > tbody > tr:nth-child({cur}) > td.td-view').text
     if cur_progress == '100%': continue
 
     driver.find_element(By.CSS_SELECTOR,f'#student-container > section > div.board-list-wrap > table > tbody > tr:nth-child({cur}) > td.td-file > a').click()
-    driver.switch_to.window( driver.window_handles[2])
-    go_frame=driver.find_element(By.XPATH,'/html/frameset/frame[2]')
-    driver.switch_to.frame(go_frame)
+    time.sleep(3)
+    driver.switch_to.window(driver.window_handles[2])
+    driver.switch_to.frame(driver.find_element(By.XPATH,'/html/frameset/frame[2]'))
     
-    #한 강의 다 듣기
-    while True:
-        driver.find_element(By.TAG_NAME,'html').click()
+    #한 챕터의 모든 강의 다 듣기################################
+
+    # 처음 들어갈 때부터 퀴즈가 나올 수 있으므로 예외처리###############################
+    try:
+        driver.find_element(By.XPATH,'/html/body/div/div[2]/div[2]/div[2]/div[3]/span').text[2:-2].split(sep=' / ')
+    except:
+        any_input=input("퀴즈를 다 풀고 난 뒤, 아무 키나 입력하세요")
+        if any_input:
+            driver.find_element(By.ID,'btn_nextPage').click()
+    ###############################################################################
+
+    driver.find_element(By.TAG_NAME,'html').click()
+    cur_count,fin_count=map(int,driver.find_element(By.XPATH,'/html/body/div/div[2]/div[2]/div[2]/div[3]/span').text[2:-2].split(sep=' / '))
+    for _ in range(fin_count-cur_count+1):
         try:
+            #시간을 확인하기 전에 현재 보고 있는 window가 강의 창이 맞는지 다시 점검
+            driver.switch_to.window(driver.window_handles[2])
+            driver.switch_to.frame(driver.find_element(By.XPATH,'/html/frameset/frame[2]'))
+
+            driver.find_element(By.TAG_NAME,'html').click()
             watch_time=driver.find_element(By.ID,'divCurrentTime').text
             if watch_time:
-                cur,fin=watch_time.split(sep=' / ')
-                time.sleep(int(fin)+1)
+                cur_time,fin_time=map(int,watch_time.split(sep=' / '))
+                time.sleep(fin_time+3)
                 driver.find_element(By.TAG_NAME,'html').click()
                 driver.find_element(By.ID,'btn_nextPage').click()
         except:
-            while True: pass
-        
+            #퀴즈가 나왔을 때 예외처리
+            any_input=input("퀴즈를 다 풀고 난 뒤, 아무 키나 입력하세요")
+            if any_input:
+                driver.find_element(By.ID,'btn_nextPage').click()
+                continue
+    #한 챕터의 강의를 모두 시청했을 경우, 현재 켜져있는 강의 창을 닫고 window를 전환하며 반복문 종료
+    time.sleep(2)
+    driver.close()
+    driver.switch_to.window( driver.window_handles[1])
+    driver.find_element(By.ID,'student-container').click()
 #################################################################
