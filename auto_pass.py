@@ -29,7 +29,7 @@ driver.find_element(By.XPATH,'/html/body/div[2]/div[2]/div/div[2]/form/fieldset/
 
 #교육 정보 페이지 들어가기
 driver.find_element(By.XPATH,'/html/body/main/section[2]/div/ul/li[1]').click()
-driver.find_element(By.CSS_SELECTOR,'#container > section.sub-wrap > div > table > tbody > tr:last-child > td:nth-child(7) > button.lecture-list-btn2').click()
+driver.find_element(By.CSS_SELECTOR,'#container > section.sub-wrap > div > table > tbody > tr:last-child > td:nth-child(7) > button.lecture-list-btn1').click()
 time.sleep(3)
 driver.find_element(By.XPATH,'/html/body/div[2]/div[2]/div/div[2]/span[1]').click()
 
@@ -37,18 +37,20 @@ driver.find_element(By.XPATH,'/html/body/div[2]/div[2]/div/div[2]/span[1]').clic
 driver.switch_to.window( driver.window_handles[1])
 driver.find_element(By.XPATH,'/html/body/main/section/div[1]/article/a').click()
 #######################################
-while True:
+
+#lecture_count : 강의의 수
+lecture_count=int(driver.find_element(By.CSS_SELECTOR,'#student-container > section > div.board-list-wrap > table > tbody > tr:last-child > td.d-num').text)
+
+#cur : 현재 재생되는 강의의 number
+for cur in range(1,lecture_count+1):
     #진도율 갱신을 위한 화면 클릭
     driver.find_element(By.ID,'student-container').click()
-    #진도율 확인
-    finish_check=driver.find_element(By.XPATH,'/html/body/main/section/div[1]/table/tbody/tr[1]/td[2]').text
-    if finish_check == '100%':
-        driver.quit()
-        break
 
+    #진도율이 100%면 continue
+    cur_progress=driver.find_element(By.CSS_SELECTOR,f'#student-container > section > div.board-list-wrap > table > tbody > tr:nth-child({cur}) > td.td-view')
+    if cur_progress == '100%': continue
 
-    #진도율이 다 차지 않으면 맨 마지막 강의부터 다시 수강
-    driver.find_element(By.CSS_SELECTOR,'#student-container > section > div.board-list-wrap > table > tbody > tr:last-child > td.td-file > a').click()
+    driver.find_element(By.CSS_SELECTOR,f'#student-container > section > div.board-list-wrap > table > tbody > tr:nth-child({cur}) > td.td-file > a').click()
     driver.switch_to.window( driver.window_handles[2])
     go_frame=driver.find_element(By.XPATH,'/html/frameset/frame[2]')
     driver.switch_to.frame(go_frame)
@@ -64,6 +66,6 @@ while True:
                 driver.find_element(By.TAG_NAME,'html').click()
                 driver.find_element(By.ID,'btn_nextPage').click()
         except:
-            print("wrong")
+            while True: pass
         
 #################################################################
