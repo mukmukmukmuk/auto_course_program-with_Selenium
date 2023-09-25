@@ -51,12 +51,15 @@ def quiz():
     global driver
     result = tkinter.messagebox.showinfo("퀴즈!", "퀴즈를 모두 풀고, 확인 버튼을 눌러주세요")
     if result:
+        driver.find_element(By.TAG_NAME,'html').click()
+        time.sleep(0.5)
         driver.find_element(By.ID,'btn_nextPage').click()
         print("사용자가 확인을 눌렀습니다.")
         
 
 def learn_class():
     global driver
+    time_error=time.sleep(0)
     #chapter_count : 챕터의 수
     chapter_count=int(driver.find_element(By.CSS_SELECTOR,'#student-container > section > div.board-list-wrap > table > tbody > tr:last-child > td.d-num').text)
 
@@ -92,13 +95,16 @@ def learn_class():
                 watch_time=driver.find_element(By.ID,'divCurrentTime').text
                 if watch_time:
                     cur_time,fin_time=map(int,watch_time.split(sep=' / '))
-                    time.sleep(fin_time+3)
+                    time.sleep(fin_time)
                     driver.find_element(By.TAG_NAME,'html').click()
+                    time.sleep(0.5)
                     driver.find_element(By.ID,'btn_nextPage').click()
+                
             except Exception as ec:
                 #퀴즈가 나왔을 때 예외처리
                 print(ec)
                 quiz()
+                continue
         #한 챕터의 강의를 모두 시청했을 경우, 현재 켜져있는 강의 창을 닫고 window를 전환하며 반복문 종료
         #시간을 확인하기 전에 현재 보고 있는 window가 강의 창이 맞는지 다시 점검
         
@@ -108,7 +114,6 @@ def learn_class():
             driver.close()
         except:  pass
         driver.switch_to.window( driver.window_handles[1])
-        driver.find_element(By.XPATH,'/html/body/main/section/div[1]/article/a').click()
 
 
 #자동강의 수강 동작
