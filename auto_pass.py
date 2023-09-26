@@ -70,6 +70,7 @@ def quiz():
 
 def learn_class():
     global driver
+    time_error=time.sleep(0)
     #chapter_count : 챕터의 수
     chapter_count=int(driver.find_element(By.CSS_SELECTOR,'#student-container > section > div.board-list-wrap > table > tbody > tr:last-child > td.d-num').text)
     #cur : 현재 재생되는 챕터의 number
@@ -123,10 +124,12 @@ def learn_class():
                     #time.sleep(0.5)
                     driver.find_element(By.ID,'btn_nextPage').click()
                 
+                
             except Exception as ec:
                 #퀴즈가 나왔을 때 예외처리
                 print(ec)
                 quiz()
+                continue
                 continue
         #한 챕터의 강의를 모두 시청했을 경우, 현재 켜져있는 강의 창을 닫고 window를 전환하며 반복문 종료
         #시간을 확인하기 전에 현재 보고 있는 window가 강의 창이 맞는지 다시 점검
