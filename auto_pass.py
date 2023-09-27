@@ -19,6 +19,7 @@ options.add_argument("incognito")
 options.add_argument("--mute-audio")
 service=Service(ChromeDriverManager().install())
 
+
 def login():
     global driver
     driver=webdriver.Chrome(service=service, options=options)
@@ -45,28 +46,35 @@ def go_chapter():
     driver.switch_to.window( driver.window_handles[1])
     driver.find_element(By.XPATH,'/html/body/main/section/div[1]/article/a').click()
 
+
 def quiz():
     global driver
     global root
-    font=tkinter.font.Font(family="맑은 고딕", size=40)
-    #그냥 quiz함수를 실행하면 새로운 윈도우 창이 여러 개 뜨는 상황이 발생
-    #hasattr 함수를 이용해 quiz 함수에 quiz_page가 없을 경우에만 원래 실행하려던 것들을 실행시킴
-    if not hasattr(quiz,'quiz_page'):
-        quiz.quiz_page=Toplevel(root)
-        quiz.quiz_page.geometry("700x300")
-        quiz.quiz_page.lift()
-        quiz.quiz_page.title('퀴즈!')
-        quiz.quiz_text=Label(quiz.quiz_page, text = " 퀴즈를 모두 풀고, \n확인 버튼을 눌러주세요",font=font)
-        quiz.quiz_text.grid(row=0,column=0)
+    #font=tkinter.font.Font(family="맑은 고딕", size=40)
+    ##그냥 quiz함수를 실행하면 새로운 윈도우 창이 여러 개 뜨는 상황이 발생
+    #quiz_page=Toplevel(root)
+    #quiz_page.geometry("700x300")
+    #quiz_page.lift()
+    #quiz_page.title('퀴즈!')
+    #quiz_text=Label(quiz_page, text = " 퀴즈를 모두 풀고, \n확인 버튼을 눌러주세요",font=font)
+    #quiz_text.grid(row=0,column=0)
+#
+    #def next_page_button():
+    #    driver.find_element(By.ID,'btn_nextPage').click()
+    #    quiz_page.destroy()
+#
+    #quiz_complete=Button(quiz_page,text='확인',width=10,font=font)
+    #quiz_complete.grid(row=1,column=0,pady=10)
+    #quiz_complete.configure(bg="orange")
+    #quiz_complete['command'] = next_page_button
+    ##퀴즈를 푸는 시간 동안 비동기적으로 처리하는 것을 방지
 
-        def next_page_button():
-            driver.find_element(By.ID,'btn_nextPage').click()
-            quiz.quiz_page.destroy()
+    result = tkinter.messagebox.showinfo("퀴즈!", "퀴즈를 모두 풀고, 확인 버튼을 눌러주세요")
+    if result:
+        driver.find_element(By.ID,'btn_nextPage').click()
+        print("사용자가 확인을 눌렀습니다.")
 
-        quiz.quiz_complete=Button(quiz.quiz_page,text='확인',width=10,command=next_page_button,font=font)
-        quiz.quiz_complete.grid(row=1,column=0,pady=10)
-        quiz.quiz_complete.configure(bg="orange")
-        
+
 
 def learn_class():
     global driver
@@ -98,13 +106,12 @@ def learn_class():
             driver.find_element(By.XPATH,'/html/body/div/div[2]/div[2]/div[2]/div[3]/span').text[2:-2].split(sep=' / ')
         except Exception as ec:
             quiz()
+            
         ###############################################################################
-        #퀴즈를 푸는 시간 동안 기다리기
-        WebDriverWait(driver,600).until(EC.visibility_of_element_located((By.ID,'player')))
+        
         driver.find_element(By.ID,'player').click()
         # 강의의 정보가 뜨기까지 로딩 시간이 존재하므로, 이에 대한 예외처리를 해줌
         WebDriverWait(driver,10).until(EC.visibility_of_element_located((By.XPATH,'/html/body/div/div[2]/div[2]/div[2]/div[3]/span')))
-
         cur_count,fin_count=map(int,driver.find_element(By.XPATH,'/html/body/div/div[2]/div[2]/div[2]/div[3]/span').text[2:-2].split(sep=' / '))
         total_continue=fin_count-cur_count+1
         for _ in range(total_continue):
@@ -113,7 +120,7 @@ def learn_class():
                 driver.switch_to.window(driver.window_handles[2])
                 driver.switch_to.frame(driver.find_element(By.XPATH,'/html/frameset/frame[2]'))
                 #퀴즈를 푸는 시간 동안 기다리기
-                WebDriverWait(driver,600).until(EC.visibility_of_element_located((By.ID,'player')))
+                WebDriverWait(driver,10).until(EC.visibility_of_element_located((By.ID,'player')))
                 driver.find_element(By.ID,'player').click()
                 watch_time=driver.find_element(By.ID,'divCurrentTime').text
                 if watch_time:
@@ -122,7 +129,6 @@ def learn_class():
                     driver.find_element(By.TAG_NAME,'html').click()
                     WebDriverWait(driver,3).until(EC.visibility_of_element_located((By.ID,'btn_nextPage')))
                     driver.find_element(By.ID,'btn_nextPage').click()
-                
             except Exception as ec:
                 #퀴즈가 나왔을 때 예외처리
                 quiz()
