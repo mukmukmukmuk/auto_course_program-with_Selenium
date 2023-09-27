@@ -99,7 +99,8 @@ def learn_class():
         except Exception as ec:
             quiz()
         ###############################################################################
-        WebDriverWait(driver,300).until(EC.visibility_of_element_located((By.ID,'player')))
+        #퀴즈를 푸는 시간 동안 기다리기
+        WebDriverWait(driver,600).until(EC.visibility_of_element_located((By.ID,'player')))
         driver.find_element(By.ID,'player').click()
         # 강의의 정보가 뜨기까지 로딩 시간이 존재하므로, 이에 대한 예외처리를 해줌
         WebDriverWait(driver,10).until(EC.visibility_of_element_located((By.XPATH,'/html/body/div/div[2]/div[2]/div[2]/div[3]/span')))
@@ -111,8 +112,8 @@ def learn_class():
                 #시간을 확인하기 전에 현재 보고 있는 window가 강의 창이 맞는지 다시 점검
                 driver.switch_to.window(driver.window_handles[2])
                 driver.switch_to.frame(driver.find_element(By.XPATH,'/html/frameset/frame[2]'))
-
-                WebDriverWait(driver,300).until(EC.visibility_of_element_located((By.ID,'player')))
+                #퀴즈를 푸는 시간 동안 기다리기
+                WebDriverWait(driver,600).until(EC.visibility_of_element_located((By.ID,'player')))
                 driver.find_element(By.ID,'player').click()
                 watch_time=driver.find_element(By.ID,'divCurrentTime').text
                 if watch_time:
