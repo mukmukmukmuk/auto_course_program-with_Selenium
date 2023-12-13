@@ -39,7 +39,7 @@ def go_chapter():
     global driver
     #교육 정보 페이지 들어가기
     driver.find_element(By.XPATH,'/html/body/main/section[2]/div/ul/li[1]').click()
-    driver.find_element(By.CSS_SELECTOR,'#container > section.sub-wrap > div > table > tbody > tr:last-child > td:nth-child(7) > button.lecture-list-btn1').click()
+    driver.find_element(By.CSS_SELECTOR,'#container > section.sub-wrap > div > table > tbody > tr:first-child > td:nth-child(7) > button.lecture-list-btn1').click()
     driver.implicitly_wait(3)
     driver.find_element(By.XPATH,'/html/body/div[2]/div[2]/div/div[2]/span[1]').click()
     # 교육 정보 페이지에서 강의실 들어가기
