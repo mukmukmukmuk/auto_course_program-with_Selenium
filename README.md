@@ -7,4 +7,5 @@ Selenium이라는 python의 프레임워크를 이용해 자동으로 강의가 
 
 # 사용법
 >방법 1. auto_pass.py를 실행하고, 아이디와 비밀번호를 입력하여 강의를 수강한다.
+
 >방법 2. ```pip install pyinstaller```를 통해 pyinstaller를 설치하고, ```pyinstaller --onefile auto_pass.py``` 명령을 이용해 실행파일을 만든 뒤, 실행 파일을 이용해 아이디와 비밀번호를 입력하여 강의를 수강한다.
